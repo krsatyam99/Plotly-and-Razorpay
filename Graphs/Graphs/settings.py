@@ -132,5 +132,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
-RAZOR_KEY_ID = "rzp_test_bBDMZD1V12Ra6A"
-RAZOR_KEY_SECRET = "R4XYxo9ZBz5jbYyslHNfqqMZ"
+RAZOR_KEY_ID = ""
+RAZOR_KEY_SECRET = ""
