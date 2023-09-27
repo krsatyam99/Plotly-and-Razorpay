@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+	<style>
+	/* Apply styles to the table, table header (th), and table data (td) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0; /* Add some margin for better spacing */
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+/* Style the table header cells */
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Style the table data cells alternately for better readability */
+tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+/* Style the table data cells when hovered */
+td:hover {
+    background-color: #e0e0e0;
+}
+
+
+/* Define keyframes for the flight animation */
+@keyframes fly {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Apply animation to the text element */
+.animated-text {
+    animation: fly 15s linear infinite; /* Adjust duration and timing as needed */
+    text-align: center;
+}
+
+</style>
+
+</head>
+<title>Plotly</title>
+<body>
+	<header>
+        <h1 class="animated-text">
+			<img src="{% static 'flight.gif' %}" alt="Flying Flight GIF">
+        </h1>
+    </header>
+		<style>
+		.grid-container {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-gap: 20px;
+		}
+    </style>
+    
+	<div class="grid-container">
+		<div class="grid-child purple">
+			<div id="Airline"></div>
+		</div>
+		<div class="grid-child green">
+			<div id="trips"></div>
+		</div>
+	</div>
+	<div id="monthly-total-graph"></div>
+
+
+	<div id ="mytable">
+		<table>
+			<tr>
+				<th style="text-align:center">From</th>
+				<th>To</th>
+				<th>Travel Date</th>
+				<th>Ticket Price</th>
+
+				<th>Booking Date</th>
+				<th>Round Trip</th>
+				<th>Return Date</th>
+				<th>Airline</th>
+				<th>Booking Type</th>
+				<th>No of passengers</th>
+				<th>Travelling Internationally</th>
+			  </tr>
+			  {% for detail in details %}
+			  <tr>
+			
+				<td style="text-align:center">{{detail.From}}</td>
+				<td style="text-align:center"> {{detail.To}}</td>
+				<td style="text-align:center">{{detail.Travel_date}}</td>
+				<td style="text-align:center">Rs. {{detail.Price}}/-</td>
+
+
+				<td style="text-align:center">{{detail.booking_date}}</td>
+				<td style="text-align:center">
+{% if detail.Is_round %}
+<span style ="color:green"> &#10004;</span>
+{% else %}
+<span style="color: red;">&#10008;</span> <!-- Cross icon -->
+{% endif %}
+</td>
+
+				</td>
+				<td style="text-align:center">{{detail.round_travel_date}}</td>
+				<td style="text-align:center">{{detail.get_Airline_display}}</td>
+				<td style="text-align:center">{{detail.get_Travel_type_display}}</td>
+				<td style="text-align:center">{{detail.No_of_passeengers}}</td>
+				<td style="text-align:center">
+					{% if detail.International_trip %}
+						<span style="color: green;">&#10004;</span> <!-- Tick icon -->
+					{% else %}
+						<span style="color: red;">&#10008;</span> <!-- Cross icon -->
+					{% endif %}
+				</td>
+							
+			  </tr>
+			  {% endfor %}
+		</table>
+
+
+
+	</div>
+	
+
+
+    <!-- Include Plotly JavaScript library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Render the Plotly chart using plot_div -->
+	<script>
+		// Extract data from Django context (assuming 'Airlines' contains airline_income)
+		var airlineData = {{ Airlines|safe }};
+	
+		// Extract labels (airline names) and values (total prices) from the data
+		var airlineNames = airlineData.map(function(entry) {
+			return entry.Airline;
+		});
+	
+		var totalPrices = airlineData.map(function(entry) {
+			return entry.total_price;
+		});
+	
+		// Create data for the pie chart
+		var data = [{
+			values: totalPrices,
+			labels: airlineNames,
+			type: 'pie'
+		}];
+	
+		// Set layout options
+		var layout = {
+			height: 400,
+			width: 500,
+			title: 'Bookings Chart with respect to Airlines ',
+
+			
+		};
+	
+		// Create the pie chart using Plotly
+		Plotly.newPlot('Airline', data, layout);
+	</script>
+	
+	<script>
+		// Get the formatted monthly totals data passed from Django view
+		var data = {{ one_way|safe }};
+		
+		// Extract month names and total prices from the data
+		var months = data.map(entry => entry.month);
+		var totalPrices = data.map(entry => entry.total_price);
+		
+		// Create a Plotly bar graph
+		var trace = {
+			x: months,
+			y: totalPrices,
+			type: 'bar'
+		};
+		
+		var layout = {
+			title: 'Monthly Total Prices For Domestic One Way Flight Booking ',
+			xaxis: {
+				title: 'Month'
+			},
+			yaxis: {
+				title: 'Total Price'
+			}
+		};
+		
+		var config = {
+			responsive: true
+		};
+		
+		Plotly.newPlot('monthly-total-graph', [trace], layout, config);
+	</script>
+	<script>
+		// Extract counts from Django context
+		var roundTrips = {{ round_trips|safe }};
+		var international = {{ International|safe }};
+		var oneWayDomestic = {{ one_way_domestic }};
+		var oneWayInternational = {{ one_way_international }};
+	
+		// Create data for the pie chart
+		var data = [{
+			values: [roundTrips, international, oneWayDomestic, oneWayInternational],
+			labels: ['Round Trips', 'International', 'One Way Domestic', 'One Way International'],
+			type: 'pie'
+		}];
+	
+		// Set layout options
+		var layout = {
+			title:"Travel  Charts accordance to Trip type",
+			height: 400,
+			width: 500
+		};
+	
+		// Create the pie chart using Plotly
+		Plotly.newPlot('trips', data, layout);
+	</script>
+	
+	
+</body>
+</html>
