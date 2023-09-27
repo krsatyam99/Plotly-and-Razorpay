@@ -1,6 +1,5 @@
 # Plotly-and-Razorpay
 Multi-app small Django project with Plotly and Razorpay Integration.
-#####  Demo video 
 ## Project Structure.
 
 ![plotly and razorpay project structure](https://github.com/krsatyam99/Plotly-and-Razorpay/assets/103446420/67f4d108-e1bf-4bc3-b3b8-dc33fa785c41)
@@ -15,7 +14,9 @@ sqlparse==0.4.4
 
 
 ## Plotly Graph 
-Plotly, is an interactive, open-source, and browser-based graphing library. It offers Python-based charting, powered by plotly. js. The library ships with over 30 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts, and more. 
+Plotly, is an interactive, open-source, and browser-based graphing library. It offers Python-based charting, powered by plotly. js. The library ships with over 30 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts, and more.
+#####  Demo video 
+
 ### Basic bar graph plotly code:
 import plotly.express as px 
 
@@ -45,6 +46,7 @@ Integrate Razorpay Standard Checkout with your website to start accepting paymen
 4. Get reliable fraud prevention and security
 
  
+#####  Demo video 
 
 
 #### Note:- 
